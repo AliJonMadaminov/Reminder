@@ -1,8 +1,8 @@
 package com.alimadaminov.reminder
 
-class RequestCode {
+class ReminderListSize {
 
     companion object {
-        val AUTH_SIGN_IN = 12
+        var size:Int = 0
     }
 }

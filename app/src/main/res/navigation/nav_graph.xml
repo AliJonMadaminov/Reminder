@@ -1,5 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/nav_graph">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mainHostFragment">
 
+    <fragment
+        android:id="@+id/mainHostFragment"
+        android:name="com.alimadaminov.reminder.MainHostFragment"
+        android:label="fragment_main_host"
+        tools:layout="@layout/fragment_main_host" >
+        <action
+            android:id="@+id/action_mainHostFragment_to_getInfoFragment"
+            app:destination="@id/getInfoFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/nav_graph" />
+        <action
+            android:id="@+id/action_mainHostFragment_to_showRemindersFragment"
+            app:destination="@id/showRemindersFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="false" />
+    </fragment>
+    <fragment
+        android:id="@+id/getInfoFragment"
+        android:name="com.alimadaminov.reminder.GetInfoFragment"
+        android:label="fragment_get_info"
+        tools:layout="@layout/fragment_get_info" >
+        <action
+            android:id="@+id/action_getInfoFragment_to_showRemindersFragment"
+            app:destination="@id/showRemindersFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addReminderFragment"
+        android:name="com.alimadaminov.reminder.AddReminderFragment"
+        android:label="fragment_add_reminder"
+        tools:layout="@layout/fragment_add_reminder" >
+        <action
+            android:id="@+id/action_addReminderFragment_to_showRemindersFragment"
+            app:destination="@id/showRemindersFragment"
+            app:launchSingleTop="false"
+            app:popUpTo="@id/showRemindersFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/showRemindersFragment"
+        android:name="com.alimadaminov.reminder.ShowRemindersFragment"
+        android:label="fragment_show_reminders"
+        tools:layout="@layout/fragment_show_reminders" >
+        <action
+            android:id="@+id/action_showRemindersFragment_to_addReminderFragment"
+            app:destination="@id/addReminderFragment"
+            app:popUpToInclusive="false" />
+    </fragment>
 </navigation>

@@ -1,4 +1,3 @@
 package com.alimadaminov.reminder
 
-class Reminder {
-}
+data class Reminder(var title:String? = null, var description:String? = null)

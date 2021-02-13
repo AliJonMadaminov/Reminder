@@ -1,59 +1,85 @@
 package com.alimadaminov.reminder
 
+import android.app.Activity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
+import android.widget.Toast
+import androidx.fragment.app.FragmentActivity
+import androidx.navigation.fragment.findNavController
+import com.alimadaminov.reminder.databinding.FragmentGetInfoBinding
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [GetInfoFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class GetInfoFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
+    lateinit var binding: FragmentGetInfoBinding
+    val auth = FirebaseAuth.getInstance()
+    val dbRef = Firebase.database.reference
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_get_info, container, false)
+        binding = FragmentGetInfoBinding.inflate(inflater)
+        return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.btnSubmit.setOnClickListener {
+            if (isNotEmptyEdt(binding.edtFirstName)
+                && isNotEmptyEdt(binding.edtSecondName)
+                && isNotEmptyEdt(binding.edtEmail)
+            ) {
+                var user: User = User(
+                    binding.edtFirstName.text.toString(),
+                    binding.edtSecondName.text.toString(),
+                    binding.edtEmail.text.toString(),
+                    auth.currentUser?.phoneNumber,
+                    arrayListOf<Reminder>()
+                )
+
+                dbRef.child(getString(R.string.db_child_users))
+                    .child(auth.currentUser?.uid!!).setValue(user)
+
+                hideKeyboard(activity)
+                findNavController().navigate(R.id.action_getInfoFragment_to_showRemindersFragment)
+            } else {
+                Toast.makeText(context, "You haven't entered something", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    fun isNotEmptyEdt(edt: EditText) = edt.text.toString().isNotEmpty()
+
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment GetInfoFragment.
-         */
-        // TODO: Rename and change types and number of parameters
+
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             GetInfoFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+
             }
+    }
+
+    fun hideKeyboard(activity: FragmentActivity?) {
+        val imm = activity?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        //Find the currently focused view, so we can grab the correct window token from it.
+        var view = activity.currentFocus
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = View(activity)
+        }
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 }
